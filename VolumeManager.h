@@ -37,7 +37,7 @@
 
 #include "Disk.h"
 #include "VolumeBase.h"
-
+#include <cutils/log.h>
 /* The length of an MD5 hash when encoded into ASCII hex characters */
 #define MD5_ASCII_LENGTH_PLUS_NULL ((MD5_DIGEST_LENGTH*2)+1)
 
@@ -101,6 +101,9 @@ public:
         }
 
         bool matches(const std::string& sysPath) {
+			if (mDebug){
+				SLOGD( "####sysPath=%s, sysPattern =%s",sysPath.c_str() ,mSysPattern.c_str());
+			}
             return !fnmatch(mSysPattern.c_str(), sysPath.c_str(), 0);
         }
 
