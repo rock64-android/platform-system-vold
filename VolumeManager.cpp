@@ -286,21 +286,20 @@ void VolumeManager::handleBlockEvent(NetlinkEvent *evt) {
     std::string eventPath(evt->findParam("DEVPATH"));
     std::string devType(evt->findParam("DEVTYPE"));
 
-	//if emmc is uer partition add as a disk. 
-	if (devType != "disk"){
-		std::string devDevName(evt->findParam("DEVNAME"));
-		int ii= 0,jj=0;
-		if(!(ii=devDevName.compare(0,sizeof("mmcblk0p")-1, "mmcblk0p")) ){
-			std::string devPartName(evt->findParam("PARTNAME"));
-			if ((jj=devPartName.compare("user"))){
-				if(mDebug)
-					SLOGD("return ii=%d,jj=%d",ii,jj);
-				return;
-			}
-		}else{
-			return;
-		}
-	}
+    //User area just one partition in the eMMC .
+    //Android 6.0 handle dev type is disk
+    //so if emmc partition is uer partition add as a disk.
+    if (devType != "disk") {
+        std::string devName(evt->findParam("DEVNAME"));
+        if (!devName.compare(0,sizeof("mmcblk0p")-1, "mmcblk0p")) {
+            std::string devPartName(evt->findParam("PARTNAME"));
+            if (devPartName.compare("user")) {
+                return;
+            }
+        } else {
+            return;
+        }
+    }
 
     int major = atoi(evt->findParam("MAJOR"));
     int minor = atoi(evt->findParam("MINOR"));
