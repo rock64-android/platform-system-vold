@@ -288,13 +288,10 @@ void VolumeManager::handleBlockEvent(NetlinkEvent *evt) {
 
 	//if emmc is uer partition add as a disk. 
 	if (devType != "disk"){
-		std::string devDevName(evt->findParam("DEVNAME"));
-		int ii= 0,jj=0;
-		if(!(ii=devDevName.compare(0,sizeof("mmcblk0p")-1, "mmcblk0p")) ){
+		std::string devName(evt->findParam("DEVNAME"));
+		if(!devName.compare(0,sizeof("mmcblk0p")-1, "mmcblk0p")){
 			std::string devPartName(evt->findParam("PARTNAME"));
-			if ((jj=devPartName.compare("user"))){
-				if(mDebug)
-					SLOGD("return ii=%d,jj=%d",ii,jj);
+			if (devPartName.compare("user")){
 				return;
 			}
 		}else{
