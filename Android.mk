@@ -11,6 +11,7 @@ common_src_files := \
 	fs/Ext4.cpp \
 	fs/F2fs.cpp \
 	fs/Vfat.cpp \
+	fs/Ntfs.cpp \
 	Loop.cpp \
 	Devmapper.cpp \
 	ResponseCode.cpp \
@@ -36,6 +37,7 @@ common_c_includes := \
 	system/security/keystore \
 	hardware/libhardware/include/hardware \
 	system/security/softkeymaster/include/keymaster
+
 
 common_shared_libraries := \
 	libsysutils \

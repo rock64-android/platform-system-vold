@@ -263,7 +263,6 @@ int VolumeManager::start() {
     mInternalEmulated = std::shared_ptr<android::vold::VolumeBase>(
             new android::vold::EmulatedVolume("/data/media"));
     mInternalEmulated->create();
-
     return 0;
 }
 
@@ -297,6 +296,12 @@ void VolumeManager::handleBlockEvent(NetlinkEvent *evt) {
                 return;
             }
         } else {
+            return;
+        }
+    } else {
+        //If the eMMC is a disk, it is not to be treated.
+        std::string devName(evt->findParam("DEVNAME"));
+        if (!devName.compare(0,sizeof("mmcblk0")-1, "mmcblk0")) {
             return;
         }
     }
