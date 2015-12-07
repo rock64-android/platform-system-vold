@@ -126,12 +126,33 @@ status_t PublicVolume::doMount() {
         setPath(mRawPath);
     }
 
-    if (fs_prepare_dir(mRawPath.c_str(), 0700, AID_ROOT, AID_ROOT) ||
-            fs_prepare_dir(mFuseDefault.c_str(), 0700, AID_ROOT, AID_ROOT) ||
-            fs_prepare_dir(mFuseRead.c_str(), 0700, AID_ROOT, AID_ROOT) ||
-            fs_prepare_dir(mFuseWrite.c_str(), 0700, AID_ROOT, AID_ROOT)) {
-        PLOG(ERROR) << getId() << " failed to create mount points";
-        return -errno;
+    if (fs_prepare_dir(mRawPath.c_str(), 0700, AID_ROOT, AID_ROOT)) {
+        ForceUnmount(mRawPath);
+        if (fs_prepare_dir(mRawPath.c_str(), 0700, AID_ROOT, AID_ROOT)) {
+            PLOG(ERROR) << getId() << " failed to create mount points";
+            return -errno;
+        }
+    }
+    if (fs_prepare_dir(mFuseDefault.c_str(), 0700, AID_ROOT, AID_ROOT)) {
+        ForceUnmount(mFuseDefault);
+        if (fs_prepare_dir(mFuseDefault.c_str(), 0700, AID_ROOT, AID_ROOT)) {
+            PLOG(ERROR) << getId() << " failed to create mount points";
+            return -errno;
+        }
+    }
+    if (fs_prepare_dir(mFuseRead.c_str(), 0700, AID_ROOT, AID_ROOT)) {
+        ForceUnmount(mFuseRead);
+        if (fs_prepare_dir(mFuseRead.c_str(), 0700, AID_ROOT, AID_ROOT)) {
+            PLOG(ERROR) << getId() << " failed to create mount points";
+            return -errno;
+        }
+    }
+    if (fs_prepare_dir(mFuseWrite.c_str(), 0700, AID_ROOT, AID_ROOT)) {
+        ForceUnmount(mFuseWrite);
+        if (fs_prepare_dir(mFuseWrite.c_str(), 0700, AID_ROOT, AID_ROOT)) {
+            PLOG(ERROR) << getId() << " failed to create mount points";
+            return -errno;
+        }
     }
     
     PLOG(ERROR) <<"MFS TYPE "<< mFsType;
