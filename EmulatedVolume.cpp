@@ -68,11 +68,26 @@ status_t EmulatedVolume::doMount() {
     setInternalPath(mRawPath);
     setPath(StringPrintf("/storage/%s", label.c_str()));
 
-    if (fs_prepare_dir(mFuseDefault.c_str(), 0700, AID_ROOT, AID_ROOT) ||
-            fs_prepare_dir(mFuseRead.c_str(), 0700, AID_ROOT, AID_ROOT) ||
-            fs_prepare_dir(mFuseWrite.c_str(), 0700, AID_ROOT, AID_ROOT)) {
-        PLOG(ERROR) << getId() << " failed to create mount points";
-        return -errno;
+    if (fs_prepare_dir(mFuseDefault.c_str(), 0700, AID_ROOT, AID_ROOT)) {
+        ForceUnmount(mFuseDefault);
+        if (fs_prepare_dir(mFuseDefault.c_str(), 0700, AID_ROOT, AID_ROOT)) {
+            PLOG(ERROR) << getId() << " failed to create mount points";
+            return -errno;
+        }
+    }
+    if (fs_prepare_dir(mFuseRead.c_str(), 0700, AID_ROOT, AID_ROOT)) {
+        ForceUnmount(mFuseRead);
+        if (fs_prepare_dir(mFuseRead.c_str(), 0700, AID_ROOT, AID_ROOT)) {
+            PLOG(ERROR) << getId() << " failed to create mount points";
+            return -errno;
+        }
+    }
+    if (fs_prepare_dir(mFuseWrite.c_str(), 0700, AID_ROOT, AID_ROOT)) {
+        ForceUnmount(mFuseWrite);
+        if (fs_prepare_dir(mFuseWrite.c_str(), 0700, AID_ROOT, AID_ROOT)) {
+            PLOG(ERROR) << getId() << " failed to create mount points";
+            return -errno;
+        }
     }
 
     dev_t before = GetDevice(mFuseWrite);

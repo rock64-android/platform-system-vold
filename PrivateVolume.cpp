@@ -100,8 +100,11 @@ status_t PrivateVolume::doMount() {
     setPath(mPath);
 
     if (PrepareDir(mPath, 0700, AID_ROOT, AID_ROOT)) {
-        PLOG(ERROR) << getId() << " failed to create mount point " << mPath;
-        return -EIO;
+        doUnmount();
+        if (PrepareDir(mPath, 0700, AID_ROOT, AID_ROOT)) {
+            PLOG(ERROR) << getId() << " failed to create mount point " << mPath;
+            return -EIO;
+        }
     }
 
     if (mFsType == "ext4") {
