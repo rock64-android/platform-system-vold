@@ -26,6 +26,7 @@
 #include <base/stringprintf.h>
 #include <base/logging.h>
 #include <cutils/fs.h>
+#include <cutils/properties.h>
 #include <private/android_filesystem_config.h>
 
 #include <fcntl.h>
@@ -223,7 +224,17 @@ status_t PublicVolume::doMount() {
 
     if (!(getMountFlags() & MountFlags::kVisible)) {
         // Not visible to apps, so no need to spin up FUSE
-        return OK;
+	char prop_value[PROPERTY_VALUE_MAX];
+	property_get("ro.udisk.visible", prop_value, "");
+	if(!strcmp("true",prop_value))
+	{
+		LOG(DEBUG)<<"------force all volume visible-----------";	
+	}
+	else
+	{
+		LOG(DEBUG)<<"----Not visible to apps, so no need to spin up FUSE----";
+		return OK;
+	}
     }
 
     dev_t before = GetDevice(mFuseWrite);
