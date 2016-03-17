@@ -268,6 +268,7 @@ status_t Disk::readPartitions() {
 
     Table table = Table::kUnknown;
     bool foundParts = false;
+    bool validParts = false;
     for (auto line : output) {
         char* cline = (char*) line.c_str();
         char* token = strtok(cline, kSgdiskToken);
@@ -301,11 +302,13 @@ status_t Disk::readPartitions() {
                 case 0x0c: // W95 FAT32 (LBA)
                 case 0x0e: // W95 FAT16 (LBA)
                     createPublicVolume(partDevice);
+		    validParts = true;
                     break;
                 }
             } else if (table == Table::kGpt) {
                 const char* typeGuid = strtok(nullptr, kSgdiskToken);
                 const char* partGuid = strtok(nullptr, kSgdiskToken);
+		validParts = true;
 
                 if (!strcasecmp(typeGuid, kGptBasicData)) {
                     createPublicVolume(partDevice);
@@ -317,7 +320,7 @@ status_t Disk::readPartitions() {
     }
 
     // Ugly last ditch effort, treat entire disk as partition
-    if (table == Table::kUnknown || !foundParts) {
+    if (table == Table::kUnknown || !foundParts ||!validParts) {
         LOG(WARNING) << mId << " has unknown partition table; trying entire device";
 
         std::string fsType;
