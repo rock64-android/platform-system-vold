@@ -28,6 +28,9 @@ common_src_files := \
 	MoveTask.cpp \
 	Benchmark.cpp \
 	TrimTask.cpp \
+	MiscManager.cpp \
+	Misc.cpp \
+	G3Dev.cpp
 
 common_c_includes := \
 	system/extras/ext4_utils \
@@ -93,6 +96,8 @@ LOCAL_SRC_FILES := \
 LOCAL_C_INCLUDES := $(common_c_includes)
 LOCAL_CFLAGS := $(vold_cflags)
 LOCAL_CONLYFLAGS := $(vold_conlyflags)
+LOCAL_CFLAGS := -Werror=format
+LOCAL_CFLAGS += -DUSE_USB_MODE_SWITCH
 
 ifeq ($(TARGET_HW_DISK_ENCRYPTION),true)
 LOCAL_C_INCLUDES += $(TARGET_CRYPTFS_HW_PATH)
